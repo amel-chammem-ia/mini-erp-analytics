@@ -16,7 +16,7 @@ def get_settings() -> Settings:
     return Settings(
         db_host=os.getenv("DB_HOST", "localhost"),
         db_port=int(os.getenv("DB_PORT", "1433")),
-        db_name=os.getenv("DB_NAME", "master"),
+        db_name=os.getenv("DB_NAME", "MiniERP"),
         db_user=os.getenv("DB_USER", "sa"),
         db_password=os.getenv("MSSQL_SA_PASSWORD", ""),
     )
