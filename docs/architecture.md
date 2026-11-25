@@ -19,6 +19,7 @@ Navigateur
 | `web` | L'interface affichée dans le navigateur | React, Vite | 5173 |
 | `api` | Les règles métier et l'accès aux données | Python, FastAPI, SQLAlchemy, pilote ODBC 18 | 8000 |
 | `db` | Les données : clients, produits, ventes, stock | SQL Server 2022 (édition Developer) | 1433 |
+| `db-init` | Crée la base `MiniERP` et charge les données de test, puis s'arrête (épisode 7) | sqlcmd | – |
 
 ## Arborescence
 
@@ -42,6 +43,10 @@ mini-erp-analytics/
 │   └── src/
 │       ├── main.jsx
 │       └── App.jsx         page d'accueil : état de l'API et de la base
+├── database/               scripts SQL (épisode 7)
+│   ├── 01_schema.sql
+│   ├── 02_seed.sql
+│   └── init.sh
 ├── docs/
 └── prompts/
 ```
