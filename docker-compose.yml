@@ -19,6 +19,20 @@ services:
       retries: 12
       start_period: 30s
 
+  # Épisode 7 : crée la base MiniERP et charge les données de test, puis s'arrête.
+  db-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64
+    environment:
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:?Définissez MSSQL_SA_PASSWORD dans le fichier .env}
+    volumes:
+      - ./database:/database:ro
+    entrypoint: ["/bin/bash", "/database/init.sh"]
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+
   api:
     build: ./backend
     env_file: .env
@@ -29,8 +43,8 @@ services:
     volumes:
       - ./backend:/code
     depends_on:
-      db:
-        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
 
   web:
     build: ./frontend
