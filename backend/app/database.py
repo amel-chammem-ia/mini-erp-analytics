@@ -1,9 +1,11 @@
 """Connexion à SQL Server avec SQLAlchemy et le pilote ODBC 18."""
+from collections.abc import Iterator
 from functools import lru_cache
 
 from sqlalchemy import Engine, create_engine, text
 from sqlalchemy.engine import URL
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
 
 from .config import get_settings
 
@@ -21,6 +23,12 @@ def get_engine() -> Engine:
         query={"driver": "ODBC Driver 18 for SQL Server", "TrustServerCertificate": "yes"},
     )
     return create_engine(url, pool_pre_ping=True)
+
+
+def get_session() -> Iterator[Session]:
+    """Dépendance FastAPI : une session par requête, toujours refermée (épisode 8)."""
+    with Session(get_engine()) as session:
+        yield session
 
 
 def check_database() -> bool:
