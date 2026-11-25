@@ -1,0 +1,65 @@
+# Mini-ERP Analytics
+
+> Un vrai logiciel de gestion construit **en écrivant le code avec des prompts**.
+> Projet fil rouge de la saison 2 de la chaîne YouTube **Formation Prompt Engineering** (Amel Chammem, Formation IA & Data).
+
+Mini-ERP Analytics est un ERP simple pour une petite entreprise : on y gère les **clients**, les **produits**, les **ventes** et le **stock**, puis on analyse les données dans des **tableaux de bord partageables** avec l'équipe.
+
+Chaque épisode ajoute une brique au projet. Ce dépôt contient, épisode par épisode :
+
+- le **code** de l'application ;
+- les **prompts** utilisés pour le générer (dossier [`prompts/`](prompts/)) ;
+- la **documentation** du projet (dossier [`docs/`](docs/)).
+
+## La stack
+
+| Couche | Technologie |
+|---|---|
+| Interface | React |
+| API | Python · FastAPI |
+| Base de données | SQL Server |
+| Déploiement | Docker |
+
+## La méthode : le cycle du développeur prompt engineer
+
+1. **Spécifier** : décrire précisément une seule petite tâche.
+2. **Générer** : écrire un prompt qui donne le contexte du projet (rôle, contexte, tâche, contraintes, format).
+3. **Vérifier** : lire le code et lancer les tests.
+4. **Intégrer** : faire un commit propre dans Git. Puis passer à la tâche suivante.
+
+L'IA écrit vite. Vous restez l'architecte et le garant de la qualité.
+
+## Le programme (épisodes 5 à 20)
+
+| Épisode | Thème | Prompts |
+|---|---|---|
+| 5 | [Devenir développeur prompt engineer](https://youtu.be/T5o0Q5thRhg) · le cahier des charges | [`prompts/episode-05.md`](prompts/episode-05.md) |
+| 6 | Architecture et installation | à venir |
+| 7 | La base SQL Server | à venir |
+| 8 | L'API clients et produits | à venir |
+| 9 | Tests et débogage | à venir |
+| 10 | Connexion et rôles | à venir |
+| 11 | Ventes et factures | à venir |
+| 12 | Stock et alertes | à venir |
+| 13 | L'interface React | à venir |
+| 14 | Les écrans métier | à venir |
+| 15 | Les analyses SQL | à venir |
+| 16 | Tableaux de bord | à venir |
+| 17 | Partage des analyses | à venir |
+| 18 | Qualité et revue de code | à venir |
+| 19 | Mise en production | à venir |
+| 20 | Examen final et certification | à venir |
+
+Le détail est dans [`docs/roadmap.md`](docs/roadmap.md) et le cahier des charges dans [`docs/cahier-des-charges.md`](docs/cahier-des-charges.md).
+
+## Suivre le projet
+
+- Chaîne YouTube : [@FormationPromptEngineering](https://www.youtube.com/@FormationPromptEngineering)
+- Playlist : « Formation Prompt Engineering »
+- Mettez une ⭐ au dépôt pour être averti des nouveaux épisodes.
+
+---
+
+### English summary
+
+Mini-ERP Analytics is a small ERP (customers, products, sales, stock, shareable analytics dashboards) built step by step **by writing the code with prompts**, as the season 2 project of the YouTube course *Formation Prompt Engineering* (narrated in French, English subtitles available). Stack: React, Python FastAPI, SQL Server, Docker. Each episode adds the code and the exact prompts used to generate it.
