@@ -51,7 +51,7 @@ L'IA écrit vite. Vous restez l'architecte et le garant de la qualité.
 | Épisode | Thème | Prompts |
 |---|---|---|
 | 5 | [Devenir développeur prompt engineer](https://youtu.be/T5o0Q5thRhg) · le cahier des charges | [`prompts/episode-05.md`](prompts/episode-05.md) |
-| 6 | Architecture et installation · Docker Compose, premier lancement | [`prompts/episode-06.md`](prompts/episode-06.md) |
+| 6 | [Architecture et premier lancement](https://youtu.be/XuGk4WG5dMw) · Docker Compose | [`prompts/episode-06.md`](prompts/episode-06.md) |
 | 7 | La base SQL Server | à venir |
 | 8 | L'API clients et produits | à venir |
 | 9 | Tests et débogage | à venir |
