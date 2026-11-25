@@ -20,6 +20,23 @@ Chaque épisode ajoute une brique au projet. Ce dépôt contient, épisode par �
 | Base de données | SQL Server |
 | Déploiement | Docker |
 
+## Démarrage rapide
+
+Prérequis : [Docker Desktop](https://www.docker.com/products/docker-desktop/) et Git.
+
+```bash
+git clone https://github.com/amel-chammem-ia/mini-erp-analytics.git
+cd mini-erp-analytics
+cp .env.example .env          # puis changez le mot de passe dans .env
+docker compose up --build
+```
+
+- Interface : http://localhost:5173
+- API : http://localhost:8000/api/health (documentation : http://localhost:8000/docs)
+- Tests de l'API : `docker compose exec api pytest`
+
+Le premier lancement télécharge les images (celle de SQL Server dépasse 1 Go) : comptez quelques minutes. L'architecture est décrite dans [`docs/architecture.md`](docs/architecture.md).
+
 ## La méthode : le cycle du développeur prompt engineer
 
 1. **Spécifier** : décrire précisément une seule petite tâche.
@@ -34,7 +51,7 @@ L'IA écrit vite. Vous restez l'architecte et le garant de la qualité.
 | Épisode | Thème | Prompts |
 |---|---|---|
 | 5 | [Devenir développeur prompt engineer](https://youtu.be/T5o0Q5thRhg) · le cahier des charges | [`prompts/episode-05.md`](prompts/episode-05.md) |
-| 6 | Architecture et installation | à venir |
+| 6 | Architecture et installation · Docker Compose, premier lancement | [`prompts/episode-06.md`](prompts/episode-06.md) |
 | 7 | La base SQL Server | à venir |
 | 8 | L'API clients et produits | à venir |
 | 9 | Tests et débogage | à venir |
