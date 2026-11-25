@@ -1,0 +1,80 @@
+:root {
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #1f2340;
+  background: #f5f6fb;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  max-width: 760px;
+  margin: 80px auto;
+  padding: 0 24px;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 40px;
+}
+
+.subtitle {
+  margin: 0 0 40px;
+  color: #6b7090;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  background: #fff;
+  border: 2px solid #e3e5f0;
+  border-radius: 16px;
+}
+
+.card .dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #b5b9cf;
+}
+
+.card.ok {
+  border-color: #3ccf7e;
+}
+
+.card.ok .dot {
+  background: #3ccf7e;
+}
+
+.card.ko {
+  border-color: #ef5b5b;
+}
+
+.card.ko .dot {
+  background: #ef5b5b;
+}
+
+.card-title {
+  margin: 0;
+  color: #6b7090;
+  font-size: 14px;
+}
+
+.card-value {
+  margin: 4px 0 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.error {
+  color: #c0392b;
+}
