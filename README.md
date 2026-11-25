@@ -35,7 +35,7 @@ docker compose up --build
 - API : http://localhost:8000/api/health (documentation : http://localhost:8000/docs)
 - Tests de l'API : `docker compose exec api pytest`
 
-Le premier lancement télécharge les images (celle de SQL Server dépasse 1 Go) : comptez quelques minutes. Au démarrage, le service `db-init` crée la base `MiniERP` et charge des données de test fictives. L'architecture est décrite dans [`docs/architecture.md`](docs/architecture.md), la base dans [`docs/base-de-donnees.md`](docs/base-de-donnees.md).
+Le premier lancement télécharge les images (celle de SQL Server dépasse 1 Go) : comptez quelques minutes. Au démarrage, le service `db-init` crée la base `MiniERP` et charge des données de test fictives. L'architecture est décrite dans [`docs/architecture.md`](docs/architecture.md), la base dans [`docs/base-de-donnees.md`](docs/base-de-donnees.md), l'API dans [`docs/api.md`](docs/api.md).
 
 ## La méthode : le cycle du développeur prompt engineer
 
@@ -53,7 +53,7 @@ L'IA écrit vite. Vous restez l'architecte et le garant de la qualité.
 | 5 | [Devenir développeur prompt engineer](https://youtu.be/T5o0Q5thRhg) · le cahier des charges | [`prompts/episode-05.md`](prompts/episode-05.md) |
 | 6 | [Architecture et premier lancement](https://youtu.be/XuGk4WG5dMw) · Docker Compose | [`prompts/episode-06.md`](prompts/episode-06.md) |
 | 7 | [La base SQL Server](https://youtu.be/mx3sTFkMawc) · tables, contraintes, données de test | [`prompts/episode-07.md`](prompts/episode-07.md) |
-| 8 | L'API clients et produits | à venir |
+| 8 | [L'API clients et produits](https://youtu.be/8yY8ea7g_sE) · FastAPI, validation, codes d'erreur | [`prompts/episode-08.md`](prompts/episode-08.md) |
 | 9 | Tests et débogage | à venir |
 | 10 | Connexion et rôles | à venir |
 | 11 | Ventes et factures | à venir |
