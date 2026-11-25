@@ -31,11 +31,13 @@ mini-erp-analytics/
 │   ├── Dockerfile
 │   ├── requirements.txt
 │   ├── app/
-│   │   ├── main.py         routes (dont /api/health)
+│   │   ├── main.py         application FastAPI (dont /api/health)
 │   │   ├── config.py       lecture des variables d'environnement
-│   │   └── database.py     connexion SQL Server
-│   └── tests/
-│       └── test_health.py
+│   │   ├── database.py     connexion SQL Server, session par requête
+│   │   ├── models.py       modèles SQLAlchemy (épisode 7)
+│   │   ├── schemas.py      schémas Pydantic (épisode 8)
+│   │   └── routers/        routes /api/clients et /api/produits (épisode 8)
+│   └── tests/              tests pytest (base SQLite en mémoire)
 ├── frontend/               l'interface
 │   ├── Dockerfile
 │   ├── package.json
