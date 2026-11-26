@@ -1,10 +1,11 @@
-"""Routes /api/clients : rechercher, lire, créer, modifier, supprimer (épisode 8)."""
+"""Routes /api/clients : rechercher, lire, créer, modifier, supprimer (épisode 8, droits : épisode 10)."""
 from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Query, Response, status
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
+from ..acces import autoriser
 from ..models import Client, Vente
 from ..schemas import ClientCreation, ClientLecture, ClientModification, Page
 from .commun import (ECHAPPEMENT, TAILLE_MAX, TAILLE_PAR_DEFAUT, SessionDep, enregistrer,
@@ -37,7 +38,8 @@ def verifier_unicite(session: Session, email: str | None, numero_tva: str | None
             raise HTTPException(status.HTTP_409_CONFLICT, message)
 
 
-@router.get("", response_model=Page[ClientLecture], summary="Rechercher des clients")
+@router.get("", response_model=Page[ClientLecture], summary="Rechercher des clients",
+            dependencies=[autoriser("clients:lire")])
 def lister_clients(
     session: SessionDep,
     recherche: Annotated[str | None, Query(max_length=100, description="Nom, e-mail ou ville")] = None,
@@ -56,12 +58,14 @@ def lister_clients(
     return {"items": items, "total": total, "page": page, "taille": taille}
 
 
-@router.get("/{client_id}", response_model=ClientLecture, summary="Lire un client")
+@router.get("/{client_id}", response_model=ClientLecture, summary="Lire un client",
+            dependencies=[autoriser("clients:lire")])
 def lire_client(client_id: int, session: SessionDep):
     return client_ou_404(session, client_id)
 
 
-@router.post("", response_model=ClientLecture, status_code=status.HTTP_201_CREATED, summary="Créer un client")
+@router.post("", response_model=ClientLecture, status_code=status.HTTP_201_CREATED, summary="Créer un client",
+             dependencies=[autoriser("clients:ecrire")])
 def creer_client(donnees: ClientCreation, session: SessionDep):
     verifier_unicite(session, donnees.email, donnees.numero_tva)
     client = Client(**donnees.model_dump())
@@ -70,7 +74,8 @@ def creer_client(donnees: ClientCreation, session: SessionDep):
     return client
 
 
-@router.patch("/{client_id}", response_model=ClientLecture, summary="Modifier un client")
+@router.patch("/{client_id}", response_model=ClientLecture, summary="Modifier un client",
+              dependencies=[autoriser("clients:ecrire")])
 def modifier_client(client_id: int, donnees: ClientModification, session: SessionDep):
     client = client_ou_404(session, client_id)
     changements = donnees.model_dump(exclude_unset=True)
@@ -81,7 +86,8 @@ def modifier_client(client_id: int, donnees: ClientModification, session: Sessio
     return client
 
 
-@router.delete("/{client_id}", status_code=status.HTTP_204_NO_CONTENT, summary="Supprimer un client")
+@router.delete("/{client_id}", status_code=status.HTTP_204_NO_CONTENT, summary="Supprimer un client",
+               dependencies=[autoriser("clients:supprimer")])
 def supprimer_client(client_id: int, session: SessionDep) -> Response:
     """Un client qui a des ventes ne se supprime pas : ses factures doivent rester lisibles."""
     client = client_ou_404(session, client_id)

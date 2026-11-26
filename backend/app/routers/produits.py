@@ -1,10 +1,11 @@
-"""Routes /api/produits : rechercher, lire, créer, modifier, archiver (épisode 8)."""
+"""Routes /api/produits : rechercher, lire, créer, modifier, archiver (épisode 8, droits : épisode 10)."""
 from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Query, Response, status
 from sqlalchemy import or_, select, true
 from sqlalchemy.orm import Session
 
+from ..acces import autoriser
 from ..models import Produit
 from ..schemas import Page, ProduitCreation, ProduitLecture, ProduitModification
 from .commun import (ECHAPPEMENT, TAILLE_MAX, TAILLE_PAR_DEFAUT, SessionDep, enregistrer,
@@ -20,7 +21,8 @@ def produit_ou_404(session: Session, produit_id: int) -> Produit:
     return produit
 
 
-@router.get("", response_model=Page[ProduitLecture], summary="Rechercher des produits")
+@router.get("", response_model=Page[ProduitLecture], summary="Rechercher des produits",
+            dependencies=[autoriser("produits:lire")])
 def lister_produits(
     session: SessionDep,
     recherche: Annotated[str | None, Query(max_length=100, description="Référence ou nom")] = None,
@@ -49,12 +51,14 @@ def lister_produits(
     return {"items": items, "total": total, "page": page, "taille": taille}
 
 
-@router.get("/{produit_id}", response_model=ProduitLecture, summary="Lire un produit")
+@router.get("/{produit_id}", response_model=ProduitLecture, summary="Lire un produit",
+            dependencies=[autoriser("produits:lire")])
 def lire_produit(produit_id: int, session: SessionDep):
     return produit_ou_404(session, produit_id)
 
 
-@router.post("", response_model=ProduitLecture, status_code=status.HTTP_201_CREATED, summary="Créer un produit")
+@router.post("", response_model=ProduitLecture, status_code=status.HTTP_201_CREATED, summary="Créer un produit",
+             dependencies=[autoriser("produits:ecrire")])
 def creer_produit(donnees: ProduitCreation, session: SessionDep):
     if session.scalar(select(Produit.id).where(Produit.reference == donnees.reference)) is not None:
         raise HTTPException(status.HTTP_409_CONFLICT, "Un produit utilise déjà cette référence")
@@ -64,7 +68,8 @@ def creer_produit(donnees: ProduitCreation, session: SessionDep):
     return produit
 
 
-@router.patch("/{produit_id}", response_model=ProduitLecture, summary="Modifier un produit")
+@router.patch("/{produit_id}", response_model=ProduitLecture, summary="Modifier un produit",
+              dependencies=[autoriser("produits:ecrire")])
 def modifier_produit(produit_id: int, donnees: ProduitModification, session: SessionDep):
     produit = produit_ou_404(session, produit_id)
     for champ, valeur in donnees.model_dump(exclude_unset=True).items():
@@ -73,7 +78,8 @@ def modifier_produit(produit_id: int, donnees: ProduitModification, session: Ses
     return produit
 
 
-@router.delete("/{produit_id}", status_code=status.HTTP_204_NO_CONTENT, summary="Archiver un produit")
+@router.delete("/{produit_id}", status_code=status.HTTP_204_NO_CONTENT, summary="Archiver un produit",
+               dependencies=[autoriser("produits:ecrire")])
 def archiver_produit(produit_id: int, session: SessionDep) -> Response:
     """Un produit ne disparaît jamais : il figure peut-être sur des factures. On l'archive."""
     produit = produit_ou_404(session, produit_id)
