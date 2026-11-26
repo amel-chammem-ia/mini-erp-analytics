@@ -3,6 +3,7 @@ uvicorn[standard]>=0.30
 sqlalchemy>=2.0,<3.0
 pyodbc>=5.1
 tzdata>=2024.1  # fuseaux horaires pour zoneinfo (épisode 9)
+pyjwt>=2.8,<3.0  # jetons de connexion signés (épisode 10)
 
 # Tests
 pytest>=8.0
