@@ -182,3 +182,66 @@ class UtilisateurLecture(BaseModel):
 
 class Moi(UtilisateurLecture):
     droits: list[str]
+
+
+# Ventes et factures (épisode 11) ---------------------------------------------
+StatutVente = Literal["brouillon", "validee", "annulee"]
+
+
+class LigneCommande(BaseModel):
+    """Le prix et le taux de TVA ne viennent jamais du client de l'API : ils sont lus dans le catalogue."""
+    model_config = ConfigDict(extra="forbid")
+
+    produit_id: Annotated[int, Field(ge=1)]
+    quantite: Annotated[int, Field(ge=1, le=10_000)]
+
+
+class VenteCreation(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    client_id: Annotated[int, Field(ge=1)]
+    lignes: Annotated[list[LigneCommande], Field(min_length=1, max_length=100)]
+
+    @model_validator(mode="after")
+    def produits_distincts(self):
+        produits = [ligne.produit_id for ligne in self.lignes]
+        if len(produits) != len(set(produits)):
+            raise ValueError("Un produit ne peut apparaître qu'une fois : augmentez sa quantité")
+        return self
+
+
+class LigneVenteLecture(BaseModel):
+    produit_id: int
+    reference: str
+    designation: str
+    quantite: int
+    prix_unitaire_ht: Decimal
+    taux_tva: Decimal
+    montant_ht: Decimal
+
+
+class TvaLecture(BaseModel):
+    taux: Decimal
+    base_ht: Decimal
+    montant_tva: Decimal
+
+
+class VenteResume(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    numero: str
+    client_id: int
+    statut: StatutVente
+    date_vente: HorodatageUTC
+    numero_facture: str | None = None
+    facturee_le: HorodatageUTC | None = None
+    total_ht: Decimal
+    total_tva: Decimal
+    total_ttc: Decimal
+
+
+class VenteDetail(VenteResume):
+    client_nom: str
+    lignes: list[LigneVenteLecture]
+    tva_par_taux: list[TvaLecture]

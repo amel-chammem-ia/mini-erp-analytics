@@ -11,6 +11,11 @@ class Settings:
     db_user: str
     db_password: str
     jwt_secret: str  # signe les jetons de connexion (épisode 10) : jamais dans le code
+    # Émetteur des factures (épisode 11). Adresse : lignes séparées par « | ».
+    entreprise_nom: str = "Mini-ERP Analytics (démo)"
+    entreprise_adresse: str = ""
+    entreprise_tva: str = ""
+    entreprise_siret: str = ""
 
 
 def get_settings() -> Settings:
@@ -21,4 +26,8 @@ def get_settings() -> Settings:
         db_user=os.getenv("DB_USER", "sa"),
         db_password=os.getenv("MSSQL_SA_PASSWORD", ""),
         jwt_secret=os.getenv("JWT_SECRET", ""),
+        entreprise_nom=os.getenv("ENTREPRISE_NOM", "Mini-ERP Analytics (démo)"),
+        entreprise_adresse=os.getenv("ENTREPRISE_ADRESSE", ""),
+        entreprise_tva=os.getenv("ENTREPRISE_TVA", ""),
+        entreprise_siret=os.getenv("ENTREPRISE_SIRET", ""),
     )

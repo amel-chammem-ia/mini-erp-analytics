@@ -2,7 +2,7 @@
 from datetime import datetime
 from decimal import ROUND_HALF_UP, Decimal
 
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Numeric, String, Unicode, UniqueConstraint, func
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Index, Numeric, String, Unicode, UniqueConstraint, func, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 CENTIME = Decimal("0.01")
@@ -53,6 +53,9 @@ class Vente(Base):
     __tablename__ = "ventes"
     __table_args__ = (
         CheckConstraint("statut IN ('brouillon', 'validee', 'annulee')", name="ck_ventes_statut"),
+        # Numéro de facture unique, mais seulement une fois attribué (les brouillons n'en ont pas).
+        Index("ux_ventes_numero_facture", "numero_facture", unique=True,
+              mssql_where=text("numero_facture IS NOT NULL"), sqlite_where=text("numero_facture IS NOT NULL")),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -63,6 +66,8 @@ class Vente(Base):
     total_ht: Mapped[Decimal] = mapped_column(Numeric(14, 2), default=Decimal("0"))
     total_tva: Mapped[Decimal] = mapped_column(Numeric(14, 2), default=Decimal("0"))
     total_ttc: Mapped[Decimal] = mapped_column(Numeric(14, 2), default=Decimal("0"))
+    numero_facture: Mapped[str | None] = mapped_column(Unicode(20))  # attribué à la validation (épisode 11)
+    facturee_le: Mapped[datetime | None] = mapped_column(DateTime)
 
     client: Mapped[Client] = relationship(back_populates="ventes")
     lignes: Mapped[list["LigneVente"]] = relationship(back_populates="vente", cascade="all, delete-orphan")
@@ -108,6 +113,18 @@ class MouvementStock(Base):
     commentaire: Mapped[str | None] = mapped_column(Unicode(200))
 
     produit: Mapped[Produit] = relationship()
+
+
+class CompteurFacture(Base):
+    """Dernier numéro de facture attribué, par année (épisode 11).
+
+    Incrémenté dans la même transaction que la validation : si la validation échoue,
+    le numéro n'est pas consommé. La numérotation reste continue, sans trou.
+    """
+    __tablename__ = "compteurs_factures"
+
+    annee: Mapped[int] = mapped_column(primary_key=True, autoincrement=False)
+    dernier_numero: Mapped[int] = mapped_column(default=0)
 
 
 class Utilisateur(Base):

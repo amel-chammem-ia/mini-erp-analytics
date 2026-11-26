@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 
 from . import database
 from .config import get_settings
-from .routers import auth, clients, produits, statistiques, utilisateurs
+from .routers import auth, clients, produits, statistiques, utilisateurs, ventes
 from .securite import verifier_secret
 
 
@@ -22,7 +22,7 @@ async def demarrage(_app: FastAPI):
 
 app = FastAPI(
     title="Mini-ERP Analytics",
-    version="0.4.0",
+    version="0.5.0",
     description="API du projet Mini-ERP Analytics (saison 2 de Formation Prompt Engineering).",
     lifespan=demarrage,
 )
@@ -30,6 +30,7 @@ app.include_router(auth.router)
 app.include_router(utilisateurs.router)
 app.include_router(clients.router)
 app.include_router(produits.router)
+app.include_router(ventes.router)
 app.include_router(statistiques.router)
 
 
