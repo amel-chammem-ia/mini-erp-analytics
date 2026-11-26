@@ -38,6 +38,8 @@ services:
     env_file: .env
     environment:
       DB_HOST: db
+      # Épisode 10 : sans secret, l'API ne démarre pas (voir .env.example)
+      JWT_SECRET: ${JWT_SECRET:?Définissez JWT_SECRET dans le fichier .env}
     ports:
       - "8000:8000"
     volumes:
