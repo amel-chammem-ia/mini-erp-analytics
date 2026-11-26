@@ -36,7 +36,7 @@ docker compose exec api python -m app.creer_admin admin@votre-entreprise.fr "Pr�
 - API : http://localhost:8000/api/health (documentation : http://localhost:8000/docs)
 - Tests de l'API : `docker compose exec api pytest`
 
-Le premier lancement télécharge les images (celle de SQL Server dépasse 1 Go) : comptez quelques minutes. Au démarrage, le service `db-init` crée la base `MiniERP` et charge des données de test fictives. L'architecture est décrite dans [`docs/architecture.md`](docs/architecture.md), la base dans [`docs/base-de-donnees.md`](docs/base-de-donnees.md), l'API dans [`docs/api.md`](docs/api.md), la méthode de test et de débogage dans [`docs/debogage.md`](docs/debogage.md), la connexion et les droits par rôle dans [`docs/droits.md`](docs/droits.md).
+Le premier lancement télécharge les images (celle de SQL Server dépasse 1 Go) : comptez quelques minutes. Au démarrage, le service `db-init` crée la base `MiniERP` et charge des données de test fictives. L'architecture est décrite dans [`docs/architecture.md`](docs/architecture.md), la base dans [`docs/base-de-donnees.md`](docs/base-de-donnees.md), l'API dans [`docs/api.md`](docs/api.md), la méthode de test et de débogage dans [`docs/debogage.md`](docs/debogage.md), la connexion et les droits par rôle dans [`docs/droits.md`](docs/droits.md), les ventes et les factures dans [`docs/factures.md`](docs/factures.md).
 
 ## La méthode : le cycle du développeur prompt engineer
 
@@ -57,7 +57,7 @@ L'IA écrit vite. Vous restez l'architecte et le garant de la qualité.
 | 8 | [L'API clients et produits](https://youtu.be/8yY8ea7g_sE) · FastAPI, validation, codes d'erreur | [`prompts/episode-08.md`](prompts/episode-08.md) |
 | 9 | [Tests et débogage](https://youtu.be/hwKSpsUV6Wo) · un vrai bug de fuseau horaire corrigé | [`prompts/episode-09.md`](prompts/episode-09.md) |
 | 10 | [Connexion et rôles](https://youtu.be/mL-6Pc3gjxY) · mots de passe hachés, jeton signé, droits par rôle | [`prompts/episode-10.md`](prompts/episode-10.md) |
-| 11 | Ventes et factures | à venir |
+| 11 | [Ventes et factures](https://youtu.be/FgNGGHJ_h7s) · totaux au centime, numéro de facture, facture PDF | [`prompts/episode-11.md`](prompts/episode-11.md) |
 | 12 | Stock et alertes | à venir |
 | 13 | L'interface React | à venir |
 | 14 | Les écrans métier | à venir |
