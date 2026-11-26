@@ -4,6 +4,7 @@
 USE MiniERP;
 GO
 SET NOCOUNT ON;
+SET QUOTED_IDENTIFIER ON;  -- la table ventes a un index filtré (épisode 11)
 
 IF NOT EXISTS (SELECT 1 FROM dbo.clients)
 BEGIN

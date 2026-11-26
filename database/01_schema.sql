@@ -1,5 +1,9 @@
--- Mini-ERP Analytics · schéma de la base (épisode 7, table utilisateurs : épisode 10)
+-- Mini-ERP Analytics · schéma de la base (épisode 7, utilisateurs : épisode 10, factures : épisode 11)
 -- Relançable sans erreur : chaque objet n'est créé que s'il n'existe pas encore.
+
+-- Obligatoire pour l'index filtré de l'épisode 11 (sqlcmd le désactive par défaut).
+SET QUOTED_IDENTIFIER ON;
+GO
 
 IF DB_ID(N'MiniERP') IS NULL
     CREATE DATABASE MiniERP;
@@ -50,8 +54,15 @@ CREATE TABLE dbo.ventes (
                 CONSTRAINT ck_ventes_statut CHECK (statut IN (N'brouillon', N'validee', N'annulee')),
     total_ht    DECIMAL(14, 2) NOT NULL CONSTRAINT df_ventes_ht DEFAULT 0 CONSTRAINT ck_ventes_ht CHECK (total_ht >= 0),
     total_tva   DECIMAL(14, 2) NOT NULL CONSTRAINT df_ventes_tva DEFAULT 0 CONSTRAINT ck_ventes_tva CHECK (total_tva >= 0),
-    total_ttc   DECIMAL(14, 2) NOT NULL CONSTRAINT df_ventes_ttc DEFAULT 0 CONSTRAINT ck_ventes_ttc CHECK (total_ttc >= 0)
+    total_ttc   DECIMAL(14, 2) NOT NULL CONSTRAINT df_ventes_ttc DEFAULT 0 CONSTRAINT ck_ventes_ttc CHECK (total_ttc >= 0),
+    numero_facture  NVARCHAR(20) NULL,   -- épisode 11 : attribué à la validation
+    facturee_le     DATETIME2(0) NULL
 );
+GO
+
+-- Épisode 11 · une base créée avant l'épisode 11 reçoit les deux colonnes de facturation.
+IF COL_LENGTH(N'dbo.ventes', N'numero_facture') IS NULL
+    ALTER TABLE dbo.ventes ADD numero_facture NVARCHAR(20) NULL, facturee_le DATETIME2(0) NULL;
 GO
 
 -- Lignes de vente -------------------------------------------------------
@@ -98,6 +109,17 @@ CREATE TABLE dbo.utilisateurs (
 );
 GO
 
+-- Compteur des factures (épisode 11) -------------------------------------
+-- Un numéro par an, continu et sans trou : FAC-2026-00001, FAC-2026-00002…
+-- Incrémenté dans la transaction de validation : une validation annulée ne consomme pas de numéro.
+IF OBJECT_ID(N'dbo.compteurs_factures', N'U') IS NULL
+CREATE TABLE dbo.compteurs_factures (
+    annee           INT NOT NULL CONSTRAINT pk_compteurs_factures PRIMARY KEY,
+    dernier_numero  INT NOT NULL CONSTRAINT df_compteurs_dernier DEFAULT 0
+                    CONSTRAINT ck_compteurs_dernier CHECK (dernier_numero >= 0)
+);
+GO
+
 -- Index sur les colonnes filtrées ou jointes souvent --------------------
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'ix_ventes_date' AND object_id = OBJECT_ID(N'dbo.ventes'))
     CREATE INDEX ix_ventes_date ON dbo.ventes (date_vente) INCLUDE (statut, total_ht);
@@ -107,4 +129,7 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'ix_lignes_vente_produit'
     CREATE INDEX ix_lignes_vente_produit ON dbo.lignes_vente (produit_id);
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'ix_mouvements_produit_date' AND object_id = OBJECT_ID(N'dbo.mouvements_stock'))
     CREATE INDEX ix_mouvements_produit_date ON dbo.mouvements_stock (produit_id, date_mouvement);
+-- Épisode 11 · numéro de facture unique, une fois attribué (index filtré : les brouillons n'en ont pas).
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'ux_ventes_numero_facture' AND object_id = OBJECT_ID(N'dbo.ventes'))
+    CREATE UNIQUE INDEX ux_ventes_numero_facture ON dbo.ventes (numero_facture) WHERE numero_facture IS NOT NULL;
 GO
