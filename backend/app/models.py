@@ -2,7 +2,7 @@
 from datetime import datetime
 from decimal import ROUND_HALF_UP, Decimal
 
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Numeric, Unicode, UniqueConstraint, func
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Numeric, String, Unicode, UniqueConstraint, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 CENTIME = Decimal("0.01")
@@ -108,3 +108,22 @@ class MouvementStock(Base):
     commentaire: Mapped[str | None] = mapped_column(Unicode(200))
 
     produit: Mapped[Produit] = relationship()
+
+
+class Utilisateur(Base):
+    """Un compte de connexion (épisode 10). Le mot de passe n'est jamais stocké, seulement son empreinte."""
+    __tablename__ = "utilisateurs"
+    __table_args__ = (
+        CheckConstraint(
+            "role IN ('commercial', 'vendeur', 'magasinier', 'manager', 'dirigeant', 'administrateur')",
+            name="ck_utilisateurs_role",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str] = mapped_column(Unicode(254), unique=True)
+    nom: Mapped[str] = mapped_column(Unicode(120))
+    mot_de_passe_hache: Mapped[str] = mapped_column(String(255))
+    role: Mapped[str] = mapped_column(Unicode(20))
+    actif: Mapped[bool] = mapped_column(default=True)
+    cree_le: Mapped[datetime] = mapped_column(DateTime, server_default=func.current_timestamp())

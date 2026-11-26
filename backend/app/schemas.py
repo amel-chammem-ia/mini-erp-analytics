@@ -5,7 +5,7 @@ une donnée invalide est refusée avec le code 422 avant même de toucher la bas
 """
 from datetime import datetime
 from decimal import Decimal
-from typing import Annotated, ClassVar, Generic, TypeVar
+from typing import Annotated, ClassVar, Generic, Literal, TypeVar
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
@@ -128,3 +128,57 @@ class CaMois(BaseModel):
     mois: Annotated[str, Field(pattern=r"^\d{4}-\d{2}$", examples=["2026-12"])]
     nb_ventes: int
     ca_ht: Decimal
+
+
+# Connexion et comptes (épisode 10) -------------------------------------------
+Role = Literal["commercial", "vendeur", "magasinier", "manager", "dirigeant", "administrateur"]
+# 12 caractères minimum (recommandation de l'ANSSI pour un mot de passe seul) ;
+# 128 maximum pour qu'un texte énorme ne coûte pas un calcul de hachage démesuré.
+MotDePasse = Annotated[str, StringConstraints(min_length=12, max_length=128)]
+
+
+class Connexion(BaseModel):
+    """À la connexion, on ne valide pas le format de l'e-mail : la réponse doit rester la même
+    qu'il existe ou non. On borne seulement les longueurs."""
+    email: Annotated[str, StringConstraints(strip_whitespace=True, to_lower=True, max_length=254)]
+    mot_de_passe: Annotated[str, StringConstraints(max_length=128)]
+
+
+class Jeton(BaseModel):
+    access_token: str
+    token_type: Literal["bearer"] = "bearer"
+    expire_dans: int  # secondes
+
+
+class UtilisateurCreation(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    email: Email
+    nom: Annotated[Texte, StringConstraints(max_length=120)]
+    role: Role
+    mot_de_passe: MotDePasse
+
+
+class UtilisateurModification(Modification):
+    OBLIGATOIRES = ("nom", "role", "actif", "mot_de_passe")
+
+    nom: Annotated[Texte, StringConstraints(max_length=120)] | None = None
+    role: Role | None = None
+    actif: bool | None = None
+    mot_de_passe: MotDePasse | None = None
+
+
+class UtilisateurLecture(BaseModel):
+    """Jamais d'empreinte de mot de passe dans une réponse."""
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    email: str
+    nom: str
+    role: Role
+    actif: bool
+    cree_le: HorodatageUTC | None = None
+
+
+class Moi(UtilisateurLecture):
+    droits: list[str]

@@ -10,6 +10,7 @@ class Settings:
     db_name: str
     db_user: str
     db_password: str
+    jwt_secret: str  # signe les jetons de connexion (épisode 10) : jamais dans le code
 
 
 def get_settings() -> Settings:
@@ -19,4 +20,5 @@ def get_settings() -> Settings:
         db_name=os.getenv("DB_NAME", "MiniERP"),
         db_user=os.getenv("DB_USER", "sa"),
         db_password=os.getenv("MSSQL_SA_PASSWORD", ""),
+        jwt_secret=os.getenv("JWT_SECRET", ""),
     )
