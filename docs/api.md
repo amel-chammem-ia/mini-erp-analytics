@@ -16,6 +16,7 @@ Mise en place à l'épisode 8. Documentation interactive (générée par FastAPI
 | `POST` | `/api/produits` | Créer un produit (stock à 0) | 201 · 409 · 422 |
 | `PATCH` | `/api/produits/{id}` | Modifier un produit (la référence ne change pas) | 200 · 404 · 422 |
 | `DELETE` | `/api/produits/{id}` | Archiver un produit | 204 · 404 |
+| `GET` | `/api/statistiques/ca-par-mois` | Chiffre d'affaires HT par mois, ventes validées, en heure de Paris (épisode 9) | 200 |
 
 Une page de résultats a toujours la même forme :
 
@@ -41,6 +42,7 @@ Une page de résultats a toujours la même forme :
 - Un **client** qui a des ventes ne se supprime pas : ses factures doivent rester lisibles.
 - Un **produit** ne disparaît jamais : `DELETE` l'archive (`actif = false`). Il n'apparaît plus dans les listes, sauf avec `inclure_archives=true`, et `PATCH {"actif": true}` le réactive.
 - La recherche traite `%`, `_` et `[` comme des caractères ordinaires : chercher « 100% » ne renvoie pas tout.
+- Les **dates** sont enregistrées en UTC et renvoyées avec leur fuseau (`"2026-11-30T23:30:00Z"`). Les regroupements par mois se font en heure de Paris (épisode 9, voir [`debogage.md`](debogage.md)).
 
 ## Exemple
 
@@ -53,7 +55,7 @@ curl -X POST http://localhost:8000/api/clients \
 Réponse `201` :
 
 ```json
-{ "id": 9, "nom": "Atelier Dupont", "email": "contact@dupont.example", "numero_tva": "FR12345678901", "ville": "Lyon", "cree_le": "2026-11-25T15:00:00" }
+{ "id": 9, "nom": "Atelier Dupont", "email": "contact@dupont.example", "numero_tva": "FR12345678901", "ville": "Lyon", "cree_le": "2026-11-25T15:00:00Z" }
 ```
 
 Le même appel une seconde fois répond `409` : `{"detail": "Un client utilise déjà cette adresse e-mail"}`.
@@ -66,4 +68,6 @@ Le même appel une seconde fois répond `409` : `{"detail": "Un client utilise d
 | `backend/app/routers/clients.py` | Routes `/api/clients` |
 | `backend/app/routers/produits.py` | Routes `/api/produits` |
 | `backend/app/routers/commun.py` | Pagination, recherche, enregistrement |
+| `backend/app/routers/statistiques.py` | Route `/api/statistiques/ca-par-mois` (épisode 9) |
+| `backend/app/temps.py` | Dates UTC et mois en heure de Paris (épisode 9) |
 | `backend/tests/test_api_clients.py`, `test_api_produits.py` | Tests, sur une base SQLite en mémoire |

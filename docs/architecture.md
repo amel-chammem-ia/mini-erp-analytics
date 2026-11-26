@@ -36,7 +36,9 @@ mini-erp-analytics/
 │   │   ├── database.py     connexion SQL Server, session par requête
 │   │   ├── models.py       modèles SQLAlchemy (épisode 7)
 │   │   ├── schemas.py      schémas Pydantic (épisode 8)
-│   │   └── routers/        routes /api/clients et /api/produits (épisode 8)
+│   │   ├── temps.py        dates UTC, mois en heure de Paris (épisode 9)
+│   │   ├── statistiques.py chiffre d'affaires par mois (épisode 9)
+│   │   └── routers/        routes clients, produits, statistiques (épisodes 8-9)
 │   └── tests/              tests pytest (base SQLite en mémoire)
 ├── frontend/               l'interface
 │   ├── Dockerfile
