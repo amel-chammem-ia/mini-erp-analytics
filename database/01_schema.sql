@@ -1,4 +1,4 @@
--- Mini-ERP Analytics · schéma de la base (épisode 7)
+-- Mini-ERP Analytics · schéma de la base (épisode 7, table utilisateurs : épisode 10)
 -- Relançable sans erreur : chaque objet n'est créé que s'il n'existe pas encore.
 
 IF DB_ID(N'MiniERP') IS NULL
@@ -77,6 +77,24 @@ CREATE TABLE dbo.mouvements_stock (
     date_mouvement  DATETIME2(0) NOT NULL CONSTRAINT df_mouvements_date DEFAULT SYSUTCDATETIME(),
     vente_id        INT NULL CONSTRAINT fk_mouvements_vente REFERENCES dbo.ventes (id),
     commentaire     NVARCHAR(200) NULL
+);
+GO
+
+-- Utilisateurs (épisode 10) ---------------------------------------------
+-- Aucun mot de passe en clair : seulement son empreinte scrypt. Aucun compte n'est créé ici :
+-- le premier administrateur se crée avec  docker compose exec api python -m app.creer_admin
+IF OBJECT_ID(N'dbo.utilisateurs', N'U') IS NULL
+CREATE TABLE dbo.utilisateurs (
+    id                  INT IDENTITY(1, 1) NOT NULL CONSTRAINT pk_utilisateurs PRIMARY KEY,
+    email               NVARCHAR(254) NOT NULL CONSTRAINT uq_utilisateurs_email UNIQUE
+                        CONSTRAINT ck_utilisateurs_email CHECK (email LIKE N'%_@_%._%'),
+    nom                 NVARCHAR(120) NOT NULL,
+    mot_de_passe_hache  VARCHAR(255)  NOT NULL,
+    role                NVARCHAR(20)  NOT NULL
+                        CONSTRAINT ck_utilisateurs_role CHECK (role IN (N'commercial', N'vendeur', N'magasinier',
+                                                                         N'manager', N'dirigeant', N'administrateur')),
+    actif               BIT NOT NULL CONSTRAINT df_utilisateurs_actif DEFAULT 1,
+    cree_le             DATETIME2(0) NOT NULL CONSTRAINT df_utilisateurs_cree_le DEFAULT SYSUTCDATETIME()
 );
 GO
 
