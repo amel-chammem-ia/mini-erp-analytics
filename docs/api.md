@@ -23,6 +23,13 @@ Toutes les routes, sauf `/api/health` et `/api/auth/connexion`, exigent l'en-tê
 | `POST` | `/api/produits` | Créer un produit (stock à 0) | `produits:ecrire` | 201 · 409 · 422 |
 | `PATCH` | `/api/produits/{id}` | Modifier un produit (la référence ne change pas) | `produits:ecrire` | 200 · 404 · 422 |
 | `DELETE` | `/api/produits/{id}` | Archiver un produit | `produits:ecrire` | 204 · 404 |
+| `GET` | `/api/ventes` | Lister les ventes (filtres `statut`, `client_id`), les plus récentes d'abord (épisode 11) | `ventes:lire` | 200 |
+| `GET` | `/api/ventes/{id}` | Détail : lignes, TVA par taux, totaux | `ventes:lire` | 200 · 404 |
+| `POST` | `/api/ventes` | Enregistrer une commande (brouillon). Prix et TVA lus dans le catalogue | `ventes:ecrire` | 201 · 404 · 409 · 422 |
+| `PUT` | `/api/ventes/{id}` | Remplacer le client et les lignes d'un brouillon | `ventes:ecrire` | 200 · 404 · 409 · 422 |
+| `POST` | `/api/ventes/{id}/valider` | Valider : sortie du stock, numéro de facture, vente figée | `ventes:valider` | 200 · 404 · 409 |
+| `POST` | `/api/ventes/{id}/annuler` | Annuler un brouillon | `ventes:ecrire` | 200 · 404 · 409 |
+| `GET` | `/api/ventes/{id}/facture.pdf` | Télécharger la facture PDF d'une vente validée | `ventes:lire` | 200 · 404 · 409 |
 | `GET` | `/api/statistiques/ca-par-mois` | Chiffre d'affaires HT par mois, ventes validées, en heure de Paris (épisode 9) | `statistiques:lire` | 200 |
 
 Une page de résultats a toujours la même forme :
@@ -40,7 +47,7 @@ Une page de résultats a toujours la même forme :
 | `401` | Pas connecté : jeton absent, expiré ou falsifié, compte désactivé (épisode 10) | `GET /api/clients` sans en-tête `Authorization` |
 | `403` | Connecté, mais le rôle ne permet pas l'action (épisode 10) | un vendeur qui crée un produit |
 | `404` | La ressource n'existe pas | `GET /api/clients/999` |
-| `409` | Conflit avec une donnée existante | e-mail ou numéro de TVA déjà utilisé, référence produit en double, suppression d'un client qui a des ventes |
+| `409` | Conflit avec une donnée existante ou avec l'état de la ressource | e-mail ou numéro de TVA déjà utilisé, référence produit en double, suppression d'un client qui a des ventes, stock insuffisant à la validation, modification d'une vente validée (épisode 11) |
 | `422` | Donnée invalide, refusée avant d'atteindre la base | e-mail mal formé, prix négatif ou à 3 décimales, TVA hors de 0 à 100, champ inconnu, `null` sur un champ obligatoire |
 | `429` | Trop d'échecs de connexion : 5 en 15 minutes sur un e-mail (épisode 10) | `POST /api/auth/connexion` |
 
@@ -52,6 +59,7 @@ Une page de résultats a toujours la même forme :
 - Un **client** qui a des ventes ne se supprime pas : ses factures doivent rester lisibles.
 - Un **produit** ne disparaît jamais : `DELETE` l'archive (`actif = false`). Il n'apparaît plus dans les listes, sauf avec `inclure_archives=true`, et `PATCH {"actif": true}` le réactive.
 - La recherche traite `%`, `_` et `[` comme des caractères ordinaires : chercher « 100% » ne renvoie pas tout.
+- Une **vente** se crée en brouillon. Prix et taux de TVA sont copiés du catalogue au moment de la commande : un changement de prix ne modifie pas une vente existante. Une vente validée est figée (épisode 11, voir [`factures.md`](factures.md)).
 - Les **dates** sont enregistrées en UTC et renvoyées avec leur fuseau (`"2026-11-30T23:30:00Z"`). Les regroupements par mois se font en heure de Paris (épisode 9, voir [`debogage.md`](debogage.md)).
 
 ## Exemple
@@ -97,5 +105,8 @@ Le même appel une seconde fois répond `409` : `{"detail": "Un client utilise d
 | `backend/app/acces.py` | Dépendances `utilisateur_courant` et `autoriser(...)` (épisode 10) |
 | `backend/app/routers/auth.py`, `utilisateurs.py` | Routes `/api/auth` et `/api/utilisateurs` (épisode 10) |
 | `backend/app/creer_admin.py` | Création du premier administrateur en ligne de commande (épisode 10) |
-| `backend/tests/test_api_clients.py`, `test_api_produits.py`, `test_api_auth.py` | Tests de l'API, sur une base SQLite en mémoire |
-| `backend/tests/test_securite.py`, `test_droits.py` | Tests sans serveur ni base (épisode 10) |
+| `backend/app/montants.py` | Calcul des totaux HT, TVA par taux, TTC, arrondi au centime (épisode 11) |
+| `backend/app/facture_pdf.py` | Génération de la facture PDF (épisode 11) |
+| `backend/app/routers/ventes.py` | Routes `/api/ventes` : commandes, validation, facture (épisode 11) |
+| `backend/tests/test_api_clients.py`, `test_api_produits.py`, `test_api_auth.py`, `test_api_ventes.py` | Tests de l'API, sur une base SQLite en mémoire |
+| `backend/tests/test_securite.py`, `test_droits.py`, `test_montants.py`, `test_facture_pdf.py` | Tests sans serveur ni base (épisodes 10 et 11) |

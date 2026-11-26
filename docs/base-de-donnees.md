@@ -12,9 +12,11 @@ clients 1 ───< ventes 1 ───< lignes_vente >─── 1 produits
 |---|---|---|
 | `clients` | Les entreprises clientes | e-mail et n° de TVA uniques, format d'e-mail contrôlé |
 | `produits` | Le catalogue | référence unique, prix et stock positifs, TVA entre 0 et 100 |
-| `ventes` | Les commandes | numéro unique, statut `brouillon`, `validee` ou `annulee` |
+| `ventes` | Les commandes | numéro unique, statut `brouillon`, `validee` ou `annulee` ; numéro de facture unique une fois attribué (épisode 11) |
 | `lignes_vente` | Le détail de chaque vente | quantité > 0, un produit une seule fois par vente, suppression en cascade avec la vente |
 | `mouvements_stock` | L'historique des entrées et sorties | type `entree` ou `sortie`, quantité > 0 |
+| `compteurs_factures` | Le dernier numéro de facture de chaque année (épisode 11) | un compteur par année, jamais négatif |
+| `utilisateurs` | Les comptes de connexion (épisode 10) | e-mail unique, rôle contrôlé, empreinte du mot de passe uniquement |
 
 ## Choix de conception
 
@@ -33,7 +35,8 @@ clients 1 ───< ventes 1 ───< lignes_vente >─── 1 produits
 |---|---|
 | `database/01_schema.sql` | Création de la base, des tables, des contraintes et des index |
 | `database/02_seed.sql` | Données de test fictives : 8 clients, 10 produits, 14 ventes sur 4 mois |
-| `database/init.sh` | Exécute les deux scripts (service `db-init` de Docker Compose) |
+| `database/03_factures.sql` | Numérote une fois les ventes déjà validées (épisode 11) |
+| `database/init.sh` | Exécute les trois scripts (service `db-init` de Docker Compose) |
 | `database/requetes/ca_par_mois.sql` | Chiffre d'affaires HT par mois |
 | `backend/app/models.py` | Les mêmes tables, vues depuis Python (SQLAlchemy) |
 
