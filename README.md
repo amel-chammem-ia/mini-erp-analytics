@@ -56,7 +56,7 @@ L'IA écrit vite. Vous restez l'architecte et le garant de la qualité.
 | 7 | [La base SQL Server](https://youtu.be/mx3sTFkMawc) · tables, contraintes, données de test | [`prompts/episode-07.md`](prompts/episode-07.md) |
 | 8 | [L'API clients et produits](https://youtu.be/8yY8ea7g_sE) · FastAPI, validation, codes d'erreur | [`prompts/episode-08.md`](prompts/episode-08.md) |
 | 9 | [Tests et débogage](https://youtu.be/hwKSpsUV6Wo) · un vrai bug de fuseau horaire corrigé | [`prompts/episode-09.md`](prompts/episode-09.md) |
-| 10 | Connexion et rôles · mots de passe hachés, jeton signé, droits par rôle | [`prompts/episode-10.md`](prompts/episode-10.md) |
+| 10 | [Connexion et rôles](https://youtu.be/mL-6Pc3gjxY) · mots de passe hachés, jeton signé, droits par rôle | [`prompts/episode-10.md`](prompts/episode-10.md) |
 | 11 | Ventes et factures | à venir |
 | 12 | Stock et alertes | à venir |
 | 13 | L'interface React | à venir |
