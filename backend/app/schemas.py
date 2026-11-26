@@ -7,7 +7,9 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Annotated, ClassVar, Generic, TypeVar
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, StringConstraints, model_validator
+
+from .temps import en_utc
 
 T = TypeVar("T")
 
@@ -24,6 +26,8 @@ NumeroTva = Annotated[
 ]
 Montant = Annotated[Decimal, Field(ge=0, max_digits=12, decimal_places=2)]
 TauxTva = Annotated[Decimal, Field(ge=0, le=100, max_digits=5, decimal_places=2)]
+# Une date qui sort de l'API dit toujours son fuseau : "2026-11-30T23:30:00Z" (épisode 9).
+HorodatageUTC = Annotated[datetime, AfterValidator(en_utc)]
 
 
 class Page(BaseModel, Generic[T]):
@@ -75,7 +79,7 @@ class ClientLecture(BaseModel):
     email: str
     numero_tva: str
     ville: str | None
-    cree_le: datetime | None
+    cree_le: HorodatageUTC | None
 
 
 # Produits ------------------------------------------------------------------
@@ -116,3 +120,11 @@ class ProduitLecture(BaseModel):
     seuil_alerte: int
     actif: bool
     sous_le_seuil: bool
+
+
+# Statistiques ---------------------------------------------------------------
+class CaMois(BaseModel):
+    """Chiffre d'affaires HT d'un mois, en heure de Paris (épisode 9)."""
+    mois: Annotated[str, Field(pattern=r"^\d{4}-\d{2}$", examples=["2026-12"])]
+    nb_ventes: int
+    ca_ht: Decimal

@@ -6,15 +6,16 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
 from . import database
-from .routers import clients, produits
+from .routers import clients, produits, statistiques
 
 app = FastAPI(
     title="Mini-ERP Analytics",
-    version="0.2.0",
+    version="0.3.0",
     description="API du projet Mini-ERP Analytics (saison 2 de Formation Prompt Engineering).",
 )
 app.include_router(clients.router)
 app.include_router(produits.router)
+app.include_router(statistiques.router)
 
 
 @app.get("/api/health", tags=["Santé"])
